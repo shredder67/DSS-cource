@@ -1,9 +1,7 @@
 from collections import defaultdict
-import pandas as pd
+from itertools import chain, combinations
 import numpy as np
 
-
-from itertools import chain, combinations
 
 def powerset(iterable):
     """
@@ -31,14 +29,15 @@ class MyARL:
         return combinations
 
     
-    def apriori(self, df, min_support=0.5, min_confidence=0.6):
+    def apriori(self, X, min_support=0.5, min_confidence=0.6, labels=None):
         """
         Forms a list of association rules
 
         Parameters:
-            df - a pandas DataFrame of one-hot encoded transactions
+            X - 2-dimensional array of one-hot encoded transactions
             min_support - minimum support level, float in range (0.0, 1.0)
             min_confidence - minimum condidence level, float in range (0.0, 1.0)
+            labels - array of item names, used to replace indicies in rules representation
 
         Returns:
             rules - list(tuple) - list of pair tuples like ((...), (...)), where first represents
@@ -53,6 +52,7 @@ class MyARL:
         one_item_set_support = np.array(np.sum(X, axis=0) / rows_number).reshape(-1)
         item_ids = np.arange(X.shape[1])
         k_itemset = [frozenset(item) for item in item_ids[one_item_set_support >= min_support]]
+        itemsets_support = {}
 
         while len(k_itemset[-1]) > 0:
             itemset = self.__generate_new_combinations(k_itemset[-1])
@@ -70,7 +70,7 @@ class MyARL:
         self.rules = []
         for s in common_itemsets:
             for ss in powerset():
-                conf = supp(s)/supp(ss)
+                conf = itemsets_support[s] / itemsets_support[ss]
                 if conf > min_confidence:
                     self.rules.append((tuple(ss), tuple(s)))
 

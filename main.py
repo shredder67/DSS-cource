@@ -55,7 +55,7 @@ def main():
 
     # Assosiation rule learning
     arl = MyARL()
-    arl.apriori(df, min_support=0.5, min_confidence=0.6)
+    arl.apriori(df.values, min_support=0.5, min_confidence=0.6, labels=df.columns)
 
     antecedents, consequents = zip(*arl.rules)
     rules_df = pd.DataFrame(data={
