@@ -25,12 +25,12 @@ class MyARL:
         for i in range(len(itemsets)):
             for j in range(i + 1, len(itemsets)):
                 if len(itemsets[i].difference(itemsets[j])) == 1:
-                    combinations.append(itemsets[i] + itemsets[j])
+                    combinations.append(itemsets[i].union(itemsets[j]))
         return combinations
 
 
     def _remove_extra_sets(self, itemset, trans) -> list:
-        trans_items = frozenset(np.nonzero(trans).tolist())
+        trans_items = frozenset(np.nonzero(trans)[0].tolist())
         filtered_sets = [s for s in itemset if s.issubset(trans_items)]
         return filtered_sets
      
@@ -52,14 +52,14 @@ class MyARL:
         """
         # Find frequent item sets (with respect to min_support metric)
 
-        rows_number = X.shape[1]
+        rows_number = X.shape[0]
         one_item_set_support = np.array(np.sum(X, axis=0) / rows_number).reshape(-1)
         item_ids = np.arange(X.shape[1])
-        k_itemset = [frozenset(item) for item in item_ids[one_item_set_support >= min_support]]
-        itemsets_support = one_item_set_support
+        k_itemset = [[frozenset([item]) for item in item_ids[one_item_set_support >= min_support]]]
+        itemsets_support = {k_itemset[i]: one_item_set_support[i] for i, v in enumerate(item_ids) if v}
 
         while len(k_itemset[-1]) > 0:
-            itemset = self.__generate_new_combinations(k_itemset[-1])
+            itemset = self._generate_new_combinations(k_itemset[-1])
             itemset_counts = defaultdict(int)
             for trans in X:
                 itemeset_filtered = self._remove_extra_sets(itemset, trans)
@@ -69,12 +69,12 @@ class MyARL:
             itemsets_support.update(itemset_sup)
             k_itemset.append([s for s in itemset if s in itemset_sup])
 
-        common_itemsets = [*k_itemset]
+        common_itemsets = list(chain.from_iterable(k_itemset))
         
         # Association rule generation
         self.rules = []
         for s in common_itemsets:
-            for ss in powerset():
+            for ss in powerset(s):
                 conf = itemsets_support[s] / itemsets_support[ss]
                 if conf > min_confidence:
                     self.rules.append([list(ss), list(s)])
@@ -82,6 +82,6 @@ class MyARL:
         if labels:
             for rule in self.rules:
                 for t in rule:
-                    t = [labels[i] for i in t]
+                    t = [labels[it] for it in t]
 
         return self.rules
