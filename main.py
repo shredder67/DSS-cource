@@ -1,5 +1,5 @@
 import pandas as pd
-from apriori import MyARL
+from apriori.ARL import MyARL
 
 
 def main():
@@ -60,14 +60,15 @@ def main():
     arl = MyARL()
     arl.apriori(df.values, min_support=0.15, min_confidence=0.6, labels=df.columns)
 
-    antecedents, consequents = zip(*arl.rules)
+    antecedents, consequents, supports, confidences = zip(*arl.rules)
     rules_df = pd.DataFrame(data={
         "Antecedent": antecedents,
-        "Consequent": consequents
+        "Consequent": consequents,
+        "Support": supports,
+        "Confidence": confidences,
     })
-
     print(rules_df.head())
-
+    rules_df.to_csv('rules.csv')
     # Results display
     # 1. Вывод списка правил в .csv
     # 2. Популярные наборы
