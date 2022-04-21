@@ -8,10 +8,13 @@ class MyLinearRegression:
     
     def fit(self, X, y):
         n, k = X.shape
-        if self.fit_intercept:
-            X = np.hstack((X, np.ones(n, 1)))
         
-        self.w = np.linalg.inv(X.T @ X) @ X.T @ y # Аналитическое решение методом псевдообратной матрицы
+        X_train = X
+        if self.fit_intercept:
+            X_train = np.hstack((X, np.ones((n, 1))))
+
+        self.w = np.linalg.inv(X_train.T @ X_train) @ X_train.T @ y
+
         return self
     
     def predict(self, X):
@@ -35,11 +38,8 @@ class MyLinearRegression:
 
         # TODO: calculate other metrics
         self.scores['MSE'] = np.square(y_true - y_pred).mean()
-        self.scores['SD'] = self.scores['MSE'] ** 0.5
-        self.scores['Q_R'] = np.sum(np.square(y_mean - y_pred))
-        self.scores['Q_E'] = 
-        self.scores['R_2'] = 
-        self.scores['corr'] = 
+        self.scores['SE'] = self.scores['MSE'] ** 0.5
+        self.scores['R_2'] = 1 - np.square(y_true - y_pred).mean() / np.square(y_true - y_mean).mean()
 
         return self.scores
 
