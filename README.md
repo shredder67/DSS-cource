@@ -1,4 +1,4 @@
-# Desicion Support Systems - Part II
+# Deсision Support Systems - Part II
 
 This repository consists of my code notes for DSS course, which contents are mostly about classic approaches in data exploration and analysis.
 
@@ -11,7 +11,7 @@ It includes:
 5. **Naive Bayes Classifier**
 6. **Decision Tree**
 
-Each algorithm is located in coresponding folder with _algname_example.py_ file, which you can use as a baselines to test out implementations.
+Each algorithm is located in coresponding folder with _algname_example.py_ file, which you can use as a baseline to test out implementations.
 
 ## 1. ARL - Association Rules Learning
 
