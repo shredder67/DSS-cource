@@ -27,7 +27,7 @@ class MyARL:
             for j in range(i + 1, len(itemsets)):
                 if len(itemsets[i].difference(itemsets[j])) == 1 and itemsets[i]:
                     combinations.append(itemsets[i].union(itemsets[j]))
-        return list(set(combinations))
+        return list(set(combinations)) # this is bad, but i didn't came up with anything better
 
     def _remove_extra_sets(self, itemset, trans) -> list:
         trans_items = frozenset(np.nonzero(trans)[0].tolist())

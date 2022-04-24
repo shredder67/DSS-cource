@@ -1,0 +1,39 @@
+0, Krutoj uchitel' Onidzuka
+0, Vel'zevul
+0, Naruto
+1, Brodyaga
+1, Berserk
+1, Ataka titanov
+1, Naruto
+2, DzhoDzho
+2, Van Pis
+2, Vanpanchmen
+2, Podnyatie urovnya v odinochku
+2, Ohotnik h Ohotnik
+2, Vel'zevul
+3, Podnyatie urovnya v odinochku
+3, Vanpanchmen
+3, Naruto
+4, Podnyatie urovnya v odinochku
+4, Ohotnik h Ohotnik
+4, Klinok, rassekayushchij demonov
+4, DzhoDzho
+5, Vanpanchmen
+5, Podnyatie urovnya v odinochku
+5, Kulak Severnoj zvezdy
+5, Brodyaga
+6, Krutoj uchitel' Onidzuka
+6, Vel'zevul
+6, Brodyaga
+7, DzhoDzho
+7, D. Grej-men
+7, Ataka titanov
+7, Brodyaga
+8, DzhoDzho
+8, Vanpanchmen
+8, Podnyatie urovnya v odinochku
+9, Berserk
+9, Ohotnik h Ohotnik
+9, Brodyaga
+9, Naruto
+9, Vel'zevul

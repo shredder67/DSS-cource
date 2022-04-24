@@ -66,15 +66,9 @@ def main():
         "Support": supports,
         "Confidence": confidences,
     })
+    rules_df.index += 1
     print(rules_df.head())
     rules_df.to_csv('rules.csv')
-
-    # Results display
-    # 1. Вывод списка правил в .csv
-    # 2. Популярные наборы
-    # *3. Дерево правил
-
-    # TODO: check program output correctness with Deductor, add visualisation
 
 
 if __name__ == '__main__':

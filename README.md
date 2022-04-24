@@ -35,14 +35,49 @@ K-means clusterisation is one the most ancient techniques used to cluster data. 
 
 ## 3. Linear Regression
 
+### 3.1 Description
+
+Linear Regression is a supervised machine learning algorithm where the predicted output is continuous and has a constant slope. It’s used to predict values within a continuous range, (e.g. sales, price) rather than trying to classify them into categories (e.g. cat, dog). There are two main types:
+
+- Simple Regression
+- Multivariable regression
+
+Simple regression is a special case of Multivariable regression. Model is generally formulted like
+
+<img src="https://render.githubusercontent.com/render/math?math=y=w^Tx\%2Bb">
+
+Where **y** is the predicted value, **w** is the weights verctor, **x** is the feature vector and **b** is a bias. Bias can be interpreted as a weight multiplied by constant 1. In a simple case where w and x are scalars, output of classification is a 2D line in XY coordinate system.
+
+### 3.2 Implementation details
+
 ///
 
 ## 4. Logistic Regression
+
+### 4.1 Description
+
+///
+
+### 4.2 Implementation details
 
 ///
 
 ## 5. Naive Bayes Classifier
 
+### 5.1 Description
+
+///
+
+### 5.2 Implementation details
+
 ///
 
 ## 6. Decision Tree
+
+### 6.1 Description
+
+///
+
+### 6.2 Implementation details
+
+///
