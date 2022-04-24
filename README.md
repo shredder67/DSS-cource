@@ -1,4 +1,4 @@
-# Desicion Support Systems - Part II
+# Deсision Support Systems - Part II
 
 This repository consists of my code notes for DSS course, which contents are mostly about classic approaches in data exploration and analysis.
 
