@@ -11,7 +11,7 @@ It includes:
 5. **Naive Bayes Classifier**
 6. **Decision Tree**
 
-Each algorithm is located in coresponding folder with _algname_example.py_ file, which you can use as a baselines to test out implementations.
+Each algorithm is located in coresponding folder with _algname_example.py_ file, which you can use as a baseline to test out implementations.
 
 ## 1. ARL - Association Rules Learning
 

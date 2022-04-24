@@ -22,22 +22,19 @@ class MyLogisticRegression:
         
         X_train = np.concatenate((np.ones((n, 1)), X), axis=1)
         
-        losses = []
-        
         for iter_num in range(max_iter):
             z = sigmoid(logit(X_train, self.w))
             grad = np.dot(X_train.T, (z - y)) / len(y)
-
             self.w -= grad * lr
-
-            losses.append(self.__loss(y, z))
-        
-        return losses
 
     def predict_proba(self, X):
         n, k = X.shape
         X_ = np.concatenate((np.ones((n, 1)), X), axis=1)
         return sigmoid(logit(X_, self.w))
+
+    def score(self, y_true, p):
+        return self._loss(y_true, p)
+        # TODO: calculate all metrics (accuracy, TPR, precision, F1)
 
     def predict(self, X, threshold=0.5):
         return self.predict_proba(X) >= threshold
