@@ -36,9 +36,8 @@ class MyLinearRegression:
         y_mean = y_true.mean()
         self.scores = dict()
 
-        # TODO: calculate other metrics
         self.scores['MSE'] = np.square(y_true - y_pred).mean()
-        self.scores['SE'] = self.scores['MSE'] ** 0.5
+        self.scores['SD'] = self.scores['MSE'] ** 0.5
         self.scores['R_2'] = 1 - np.square(y_true - y_pred).mean() / np.square(y_true - y_mean).mean()
 
         return self.scores
