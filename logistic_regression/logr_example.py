@@ -7,19 +7,19 @@ from sklearn.model_selection import train_test_split
 def main():
     # Инициализация двух групп точек
     x_0 = np.concatenate((np.random.rand(20, 1) * 10, np.zeros((20, 1))), axis=1)
-    x_1  = np.concatenate((np.random.rand(20, 1) * 10 + 10, np.ones((20, 1))), axis=1)
+    x_1  = np.concatenate((np.random.rand(20, 1) * 10 + 15, np.ones((20, 1))), axis=1)
     X_origin = np.random.permutation(np.concatenate((x_0, x_1), axis=0))
     X, y = X_origin.T[0], X_origin.T[1]
-    X_train, X_test, y_train, y_test = train_test_split(X[:, np.newaxis], y, train_size=0.85)
+    X_train, X_test, y_train, y_test = train_test_split(X[:, np.newaxis], y, train_size=0.9)
 
     clf = MyLogisticRegression()
     loss_hist = clf.fit(X_train, y_train, 50, 0.1)
     print("Classifier weights: ", clf.get_weights())
 
     # Logloss on test data
-    print("Test Loss: ", clf.score(y_test, clf.predict_proba(X_test)))
+    print("Test Logloss: ", clf.score(y_test, clf.predict_proba(X_test)))
     test_pred = clf.predict(X_test, threshold=0.5)
-    print(clf.get_metrics(y_test, test_pred))
+    print('\n'.join([f'{k}: {v}' for k,v in clf.get_metrics(y_test, test_pred).items()]))
 
     # Plot the results (scatter points and sigmoid function)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))

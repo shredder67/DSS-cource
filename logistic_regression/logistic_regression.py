@@ -26,7 +26,7 @@ class MyLogisticRegression:
             z = sigmoid(logit(X_train, self.w))
             grad = np.dot(X_train.T, (z - y)) / n
             self.w -= grad * lr
-            losses.append(-self._loss(y, z))
+            losses.append(self._loss(y, z))
 
         return losses
 
@@ -53,5 +53,5 @@ class MyLogisticRegression:
 
     def _loss(self, y, p):
         p = np.clip(p, 1e-10, 1 - 1e-10)
-        return np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
+        return - np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
     
