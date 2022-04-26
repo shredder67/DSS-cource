@@ -1,8 +1,3 @@
-# TODO:
-# 1. Add popular itemsets table output to apriori
-# 2. Add lift calculations
-# 3. Add point data output (table with columns {id, coor, cluster, dist_to_centroid})
-
 from logistic_regression.logistic_regression import MyLogisticRegression
 import numpy as np
 import matplotlib.pyplot as plt

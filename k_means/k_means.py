@@ -1,19 +1,21 @@
 import numpy as np
 import numpy.linalg as lng
 
+
+def get_dist(x1, x2):
+    return lng.norm(x1 - x2)
+
+
 class MyKMeans:
 
     def __init__(self):
         self.cluster_means = {}
     
     def _closest_mean(self, x, cluster_means):
-        min_means = np.argmin([lng.norm(x - mean) for mean in cluster_means])
+        min_means = np.argmin([get_dist(x, mean) for mean in cluster_means])
         if type(min_means) is np.ndarray:
             return min_means[0]
         return min_means
-
-    def _init_centroids(self, x, k):
-        pass
 
     def fit(self, X, k=None, labels=None):
         cluster_means = X[np.random.permutation(X.shape[0])][:k]
@@ -41,3 +43,5 @@ class MyKMeans:
         for x in X:
             preds.append(class_labels[self._closest_mean(x, self.cluster_means.values())])
         return preds
+
+    

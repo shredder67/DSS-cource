@@ -59,16 +59,27 @@ def main():
     arl = MyARL()
     arl.apriori(df.values, min_support=0.15, min_confidence=0.6, labels=df.columns)
 
-    antecedents, consequents, supports, confidences = zip(*arl.rules)
+    antecedents, consequents, supports, confidences, lifts = zip(*arl.get_rules())
+    itemsets, it_supports = zip(*arl.get_popular_itemsets())
+
+    # Formatting and output
     rules_df = pd.DataFrame(data={
         "Antecedent": antecedents,
         "Consequent": consequents,
         "Support": supports,
         "Confidence": confidences,
+        "Lift": lifts
     })
     rules_df.index += 1
-    print(rules_df.head())
     rules_df.to_csv('rules.csv')
+
+    popular_itemsts_df = pd.DataFrame(data={
+        'Itemset': itemsets,
+        'Support': it_supports
+    })
+    popular_itemsts_df.index += 1
+    popular_itemsts_df.to_csv('popular_itemsets.csv')
+    
 
 
 if __name__ == '__main__':
