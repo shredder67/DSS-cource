@@ -15,8 +15,10 @@ def main():
     clf = MyKMeans()
     k = 3
     clf.fit(X, k, labels=['X_1', 'X_2'])
-    print(clf.cluster_means)
-    
+    cluster_means = clf.get_cluster_means()
+    print('Calculated means:')
+    print('\n'.join([f'{k}: {v}' for k, v in cluster_means.items()]))
+
     # Make predictions
     classes = clf.predict(X)
 
@@ -29,7 +31,10 @@ def main():
 
     # Plot the results
     xx, yy = zip(*X)
-    sns.scatterplot(x=xx, y=yy, hue=classes, palette='Set1')
+    x_means, y_means = zip(*cluster_means.values())
+    sns.set_style("dark")
+    sns.scatterplot(x=xx, y=yy, hue=classes, palette='tab10')
+    plt.scatter(x_means, y_means, c='black', marker='D', linewidths=2.)
     plt.show()
 
 if __name__ == '__main__':

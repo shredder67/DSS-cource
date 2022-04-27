@@ -42,7 +42,7 @@ class MyLogisticRegression:
         metrics = {}
         diff = y_pred - y_true
         metrics['Accuracy'] = 1.0 - (float(np.count_nonzero(diff)) / len(diff))
-
+        
         return metrics
 
     def predict(self, X, threshold=0.5):

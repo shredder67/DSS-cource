@@ -44,4 +44,7 @@ class MyKMeans:
             preds.append(class_labels[self._closest_mean(x, self.cluster_means.values())])
         return preds
 
+    def get_cluster_means(self):
+        return self.cluster_means
+
     
