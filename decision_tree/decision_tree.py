@@ -93,7 +93,8 @@ class Node:
         self.proba = proba
         self.left_child = None
         self.right_child = None
-        
+        self.predicted_value = None # this value makes sense only in leaves
+
 
 class MyDecisionTree(BaseEstimator):
     all_criterions = {
@@ -103,12 +104,13 @@ class MyDecisionTree(BaseEstimator):
         'mad_median': (mad_median, False)
     }
 
-    def __init__(self, n_classes=None, max_depth=np.inf, min_samples_split=2, 
+    def __init__(self, n_classes=None, class_labels=None, max_depth=np.inf, min_samples_split=2, 
                  criterion_name='gini', debug=False):
 
         assert criterion_name in self.all_criterions.keys(), 'Criterion name must be on of the following: {}'.format(self.all_criterions.keys())
         
         self.n_classes = n_classes
+        self.class_labels = class_labels
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.criterion_name = criterion_name
@@ -197,12 +199,14 @@ class MyDecisionTree(BaseEstimator):
         # calculate optimal threshold
         # select best feature, threshold pair based on selected criterion
         for feature_idx in range(X_subset.shape[1]):
-            dp = []
-            thr = 
+            sorted_values = X_subset.iloc[:, feature_idx].sort_values()
+            for v in sorted_values[self.min_samples_split - 1 : -self.min_samples_split + 1]:
+                y_left, y_right = self.make_split_only_y(feature_idx, v, X_subset, y_subset)
+                Q = self.criterion()
 
         return feature_index, threshold
     
-    def make_tree(self, X_subset, y_subset):
+    def make_tree(self, X_subset, y_subset, height):
         """
         Recursively builds the tree
         
@@ -222,9 +226,21 @@ class MyDecisionTree(BaseEstimator):
 
         feature_index, threshold = self.choose_best_split(X_subset, y_subset)
         new_node = Node(feature_index, threshold)
-
         
+        self.depth = max(height + 1, self.depth)
+        if self.depth != self.max_depth:
+            left_split, right_split = self.make_split(feature_index, threshold, X_subset, y_subset)
+            if len(left_split[0]) >= self.min_samples_split:
+                new_node.left_child = self.make_tree(*left_split, height + 1)
+            if len(left_split[0]) >= self.min_samples_split:
+                new_node.left_child = self.make_tree(*right_split, height + 1)
+        if new_node.left_child is None and new_node.right_child is None: # This is a leaf, now we store y value in node.value
+            if self.classification:
+                new_node.predicted_value = np.argmax(np.sum(y_subset, axis=1)) # idx of most probable class
+            else: # regression
+                new_node.predicted_value = np.mean(y_subset)
         return new_node
+            
         
     def fit(self, X, y):
         """
@@ -246,7 +262,7 @@ class MyDecisionTree(BaseEstimator):
                 self.n_classes = len(np.unique(y))
             y = one_hot_encode(self.n_classes, y)
 
-        self.root = self.make_tree(X, y)
+        self.root = self.make_tree(X, y, 0)
     
     def predict(self, X):
         """
