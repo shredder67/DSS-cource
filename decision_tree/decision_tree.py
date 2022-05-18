@@ -2,74 +2,24 @@ import numpy as np
 from sklearn.base import BaseEstimator
 
 
-def entropy(y):  
-    """
-    Computes entropy of the provided distribution. Use log(value + eps) for numerical stability
-    
-    Parameters
-    ----------
-    y : np.array of type float with shape (n_objects, n_classes)
-        One-hot representation of class labels for corresponding subset
-    
-    Returns
-    -------
-    float
-        Entropy of the provided subset
-    """
+def entropy(y):
     EPS = 0.0005
-    return - np.sum(np.log(y + EPS) * y, axis=1)
+    n = float(y.shape[0])
+    p = np.sum(y, axis=0) / n # probability of each class 
+    return - np.sum(np.log(p + EPS) * p)
 
 
 def gini(y):
-    """
-    Computes the Gini impurity of the provided distribution
-    
-    Parameters
-    ----------
-    y : np.array of type float with shape (n_objects, n_classes)
-        One-hot representation of class labels for corresponding subset
-    
-    Returns
-    -------
-    float
-        Gini impurity of the provided subset
-    """
-
-    return 1 - np.sum(np.square(y), axis=1)
+    n = float(y.shape[0])
+    p = np.sum(y, axis=0) / n # probability of each class
+    return 1 - np.sum(np.square(p))
 
 
 def variance(y):
-    """
-    Computes the variance the provided target values subset
-    
-    Parameters
-    ----------
-    y : np.array of type float with shape (n_objects, 1)
-        Target values vector
-    
-    Returns
-    -------
-    float
-        Variance of the provided target vector
-    """
     return np.var(y)
 
 
 def mad_median(y):
-    """
-    Computes the mean absolute deviation from the median in the
-    provided target values subset
-    
-    Parameters
-    ----------
-    y : np.array of type float with shape (n_objects, 1)
-        Target values vector
-    
-    Returns
-    -------
-    float
-        Mean absolute deviation from the median in the provided vector
-    """
     return np.mean(abs(y - np.mean(y)))
 
 
@@ -120,141 +70,70 @@ class MyDecisionTree(BaseEstimator):
         self.debug = debug
  
     def make_split(self, feature_index, threshold, X_subset, y_subset):
-        """
-        Makes split of the provided data subset and target values using provided feature and threshold
-        
-        Parameters
-        ----------
-        feature_index : int
-            Index of feature to make split with
-        threshold : float
-            Threshold value to perform split
-        X_subset : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the selected subset
-        y_subset : np.array of type float with shape (n_objects, n_classes) in classification 
-                   (n_objects, 1) in regression 
-            One-hot representation of class labels for corresponding subset
-        
-        Returns
-        -------
-        (X_left, y_left) : tuple of np.arrays of same type as input X_subset and y_subset
-            Part of the providev subset where selected feature x^j < threshold
-        (X_right, y_right) : tuple of np.arrays of same type as input X_subset and y_subset
-            Part of the providev subset where selected feature x^j >= threshold
-        """
-        split_idx = np.argmax(X_subset[:, feature_index] >= threshold)
-        X_left, X_right = X_subset[:split_idx, :], X_subset[split_idx:, :]
-        y_left, y_right = y_subset[:split_idx, :], y_subset[split_idx:, :]
+        greater_or_equal = X_subset[:, feature_index] >= threshold
+        less = X_subset[:, feature_index] < threshold
+        X_left, X_right = X_subset[less, :], X_subset[greater_or_equal, :]
+        y_left, y_right = y_subset[less, :], y_subset[greater_or_equal, :]
         return (X_left, y_left), (X_right, y_right)
     
     def make_split_only_y(self, feature_index, threshold, X_subset, y_subset):
-        """
-        Split only target values into two subsets with specified feature and threshold
-        
-        Parameters
-        ----------
-        feature_index : int
-            Index of feature to make split with
-        threshold : float
-            Threshold value to perform split
-        X_subset : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the selected subset
-        y_subset : np.array of type float with shape (n_objects, n_classes) in classification 
-                   (n_objects, 1) in regression 
-            One-hot representation of class labels for corresponding subset
-        
-        Returns
-        -------
-        y_left : np.array of type float with shape (n_objects_left, n_classes) in classification 
-                   (n_objects, 1) in regression 
-            Part of the provided subset where selected feature x^j < threshold
-        y_right : np.array of type float with shape (n_objects_right, n_classes) in classification 
-                   (n_objects, 1) in regression 
-            Part of the provided subset where selected feature x^j >= threshold
-        """
-        split_idx = np.argmax(X_subset[:, feature_index] >= threshold)
-        y_left, y_right = y_subset[:split_idx, :], y_subset[split_idx:, :]
+        greater_or_equal = X_subset[:, feature_index] >= threshold
+        less = X_subset[:, feature_index] < threshold
+        y_left, y_right = y_subset[less, :], y_subset[greater_or_equal, :]
         return y_left, y_right
 
+    def make_split_only_x(self, feature_index, threshold, X_subset):
+        greater_or_equal = X_subset[:, feature_index] >= threshold
+        less = X_subset[:, feature_index] < threshold
+        return X_subset[less, :], X_subset[greater_or_equal, :]
+
     def choose_best_split(self, X_subset, y_subset):
-        """
-        Greedily select the best feature and best threshold w.r.t. selected criterion
-        
-        Parameters
-        ----------
-        X_subset : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the selected subset
-        y_subset : np.array of type float with shape (n_objects, n_classes) in classification 
-                   (n_objects, 1) in regression 
-            One-hot representation of class labels or target values for corresponding subset
-        
-        Returns
-        -------
-        feature_index : int
-            Index of feature to make split with
-        threshold : float
-            Threshold value to perform split
-        """
         # for each feature
         # calculate optimal threshold
         # select best feature, threshold pair based on selected criterion
-        for feature_idx in range(X_subset.shape[1]):
-            sorted_values = X_subset.iloc[:, feature_idx].sort_values()
-            for v in sorted_values[self.min_samples_split - 1 : -self.min_samples_split + 1]:
-                y_left, y_right = self.make_split_only_y(feature_idx, v, X_subset, y_subset)
-                Q = self.criterion()
+        def calc_g(y, y_left, y_right): # add memo to not reculc every time
+            L = float(y_left.shape[0])
+            R = float(y_right.shape[0])
+            return self.criterion(y) - (L / (L + R)) * self.criterion(y_left) - (R / (L + R)) * self.criterion(y_right) 
 
-        return feature_index, threshold
+        threshold = None
+        feature_idx = 0
+        tr_G = self.criterion(y_subset)
+        # Problem: this is wildly uneffective, but I can't find a correct approach for programming this
+        for f_idx in range(X_subset.shape[1]):
+            sorted_values = np.sort(X_subset[:, f_idx])
+            for v in sorted_values[self.min_samples_split - 1 : -self.min_samples_split + 1]:
+                y_left, y_right = self.make_split_only_y(f_idx, v, X_subset, y_subset)
+                G = calc_g(y_subset, y_left, y_right)
+                if G < tr_G:
+                    threshold = v
+                    feature_idx = f_idx
+                    tr_G = G
+
+        return feature_idx, threshold
     
     def make_tree(self, X_subset, y_subset, height):
-        """
-        Recursively builds the tree
-        
-        Parameters
-        ----------
-        X_subset : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the selected subset
-        y_subset : np.array of type float with shape (n_objects, n_classes) in classification 
-                   (n_objects, 1) in regression 
-            One-hot representation of class labels or target values for corresponding subset
-        
-        Returns
-        -------
-        root_node : Node class instance
-            Node of the root of the fitted tree
-        """
-
         feature_index, threshold = self.choose_best_split(X_subset, y_subset)
         new_node = Node(feature_index, threshold)
         
         self.depth = max(height + 1, self.depth)
-        if self.depth != self.max_depth:
+        if self.depth != self.max_depth or not np.:
             left_split, right_split = self.make_split(feature_index, threshold, X_subset, y_subset)
-            if len(left_split[0]) >= self.min_samples_split:
+            if left_split[0].shape[0] >= self.min_samples_split:
                 new_node.left_child = self.make_tree(*left_split, height + 1)
-            if len(left_split[0]) >= self.min_samples_split:
-                new_node.left_child = self.make_tree(*right_split, height + 1)
+            if right_split[0].shape[0] >= self.min_samples_split:
+                new_node.right_child = self.make_tree(*right_split, height + 1)
         if new_node.left_child is None and new_node.right_child is None: # This is a leaf, now we store y value in node.value
             if self.classification:
-                new_node.predicted_value = np.argmax(np.sum(y_subset, axis=1)) # idx of most probable class
+                class_freqs = np.sum(y_subset, axis=0)
+                new_node.predicted_value = np.argmax(class_freqs) # idx of most probable class
+                new_node.proba = np.max(class_freqs) / float(y_subset.shape[0]) # probabilty of correct class
             else: # regression
                 new_node.predicted_value = np.mean(y_subset)
         return new_node
             
         
     def fit(self, X, y):
-        """
-        Fit the model from scratch using the provided data
-        
-        Parameters
-        ----------
-        X : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the data to train on
-        y : np.array of type int with shape (n_objects, 1) in classification 
-                   of type float with shape (n_objects, 1) in regression 
-            Column vector of class labels in classification or target values in regression
-        
-        """
         assert len(y.shape) == 2 and len(y) == len(X), 'Wrong y shape'
         self.criterion, self.classification = self.all_criterions[self.criterion_name]
         if self.classification:
@@ -265,42 +144,15 @@ class MyDecisionTree(BaseEstimator):
         self.root = self.make_tree(X, y, 0)
     
     def predict(self, X):
-        """
-        Predict the target value or class label  the model from scratch using the provided data
-        
-        Parameters
-        ----------
-        X : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the data the predictions should be provided for
-        Returns
-        -------
-        y_predicted : np.array of type int with shape (n_objects, 1) in classification 
-                   (n_objects, 1) in regression 
-            Column vector of class labels in classification or target values in regression
-        
-        """
-
-        # YOUR CODE HERE
-        
+        y_predicted = np.ndarray((X.shape[0], 1))
+        for i, x in enumerate(X):
+            y_predicted[i] = self.make_prediction(x, self.root)
         return y_predicted
-        
-    def predict_proba(self, X):
-        """
-        Only for classification
-        Predict the class probabilities using the provided data
-        
-        Parameters
-        ----------
-        X : np.array of type float with shape (n_objects, n_features)
-            Feature matrix representing the data the predictions should be provided for
-        Returns
-        -------
-        y_predicted_probs : np.array of type float with shape (n_objects, n_classes)
-            Probabilities of each class for the provided objects
-        
-        """
-        assert self.classification, 'Available only for classification problem'
 
-        # YOUR CODE HERE
-        
-        return y_predicted_probs
+    def make_prediction(self, x, cur_node : Node):
+        if cur_node.predicted_value is None:
+            if x[cur_node.feature_index] < cur_node.value:
+                return self.make_prediction(x, cur_node.left_child)
+            else:
+                return self.make_prediction(x, cur_node.right_child)
+        return cur_node.predicted_value

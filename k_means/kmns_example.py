@@ -13,7 +13,7 @@ def main():
     p = int(0.95 * X.shape[0])
 
     clf = MyKMeans()
-    k = 3
+    k = 2
     clf.fit(X, k, labels=['X_1', 'X_2'])
     cluster_means = clf.get_cluster_means()
     print('Calculated means:')

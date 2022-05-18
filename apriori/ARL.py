@@ -54,6 +54,7 @@ class MyARL:
                 for s in itemeset_filtered:
                     itemset_counts[s] += 1
             itemset_sup = {k: v / rows_number for k, v in itemset_counts.items() if v / rows_number >= min_support}
+            print(itemset_sup)
             self.itemsets_support.update(itemset_sup)
             k_itemset.append([s for s in itemset_counts.keys() if s in itemset_sup])
 

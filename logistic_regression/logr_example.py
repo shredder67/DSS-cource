@@ -16,11 +16,14 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(X[:, np.newaxis], y, train_size=0.8)
 
     clf = MyLogisticRegression()
-    loss_hist = clf.fit(X_train, y_train, 50, 0.1)
+    loss_hist, sep_loss_hist = clf.fit(X_train, y_train, 50, 0.1)
     print("Classifier weights: ", clf.get_weights())
 
     # Logloss on test data
-    print("Test Logloss: ", clf.score(y_test, clf.predict_proba(X_test)))
+    test_sep_log_loss = clf.score(y_test, clf.predict_proba(X_test))
+    print(f"Test Logloss: {test_sep_log_loss[0] + test_sep_log_loss[1]}")
+    print(f"Test Logloss on class 1: {test_sep_log_loss[1]}")
+    print(f"Test Logloss on class 2: {test_sep_log_loss[0]}")
     test_pred = clf.predict(X_test, threshold=0.5)
     print('\n'.join([f'{k}: {v}' for k,v in clf.get_metrics(y_test, test_pred).items()]))
 
@@ -34,9 +37,15 @@ def main():
     ax1.grid()
     ax1.set(title='Logistic regression')
 
-    ax2.plot(np.arange(0, len(loss_hist), 1), loss_hist)
+    it_num = len(loss_hist)
+    xx = np.arange(0, it_num, 1)
+    cl2_loss_hist, cl1_loss_hist = zip(*sep_loss_hist)
+    ax2.plot(xx, cl1_loss_hist, c='orange', label='class 1 loss')
+    ax2.plot(xx, cl2_loss_hist, c='gray', label='class 2 loss')
+    ax2.plot(xx, loss_hist, linewidth=2.0)
     ax2.grid()
     ax2.set(title='Logloss curve')
+    ax2.legend()
 
     plt.show()
 
