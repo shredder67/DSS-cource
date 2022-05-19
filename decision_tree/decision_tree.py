@@ -54,13 +54,12 @@ class MyDecisionTree(BaseEstimator):
         'mad_median': (mad_median, False)
     }
 
-    def __init__(self, n_classes=None, class_labels=None, max_depth=np.inf, min_samples_split=2, 
+    def __init__(self, n_classes=None, max_depth=np.inf, min_samples_split=2, 
                  criterion_name='gini', debug=False):
 
         assert criterion_name in self.all_criterions.keys(), 'Criterion name must be on of the following: {}'.format(self.all_criterions.keys())
         
         self.n_classes = n_classes
-        self.class_labels = class_labels
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.criterion_name = criterion_name
@@ -113,22 +112,21 @@ class MyDecisionTree(BaseEstimator):
         return feature_idx, threshold
     
     def make_tree(self, X_subset, y_subset, height):
-        feature_index, threshold = self.choose_best_split(X_subset, y_subset)
-        new_node = Node(feature_index, threshold)
-        
+        new_node = Node(None, None)
         self.depth = max(height + 1, self.depth)
-        if self.depth != self.max_depth or not np.:
+        if height <= self.max_depth and y_subset.shape[0] > self.min_samples_split and np.count_nonzero((np.sum(y_subset, axis=0) != 0)) > 1:
+            feature_index, threshold = self.choose_best_split(X_subset, y_subset)
+            new_node.feature_index = feature_index
+            new_node.value = threshold
             left_split, right_split = self.make_split(feature_index, threshold, X_subset, y_subset)
-            if left_split[0].shape[0] >= self.min_samples_split:
-                new_node.left_child = self.make_tree(*left_split, height + 1)
-            if right_split[0].shape[0] >= self.min_samples_split:
-                new_node.right_child = self.make_tree(*right_split, height + 1)
-        if new_node.left_child is None and new_node.right_child is None: # This is a leaf, now we store y value in node.value
+            new_node.left_child = self.make_tree(*left_split, height + 1)
+            new_node.right_child = self.make_tree(*right_split, height + 1)
+        else:
             if self.classification:
-                class_freqs = np.sum(y_subset, axis=0)
-                new_node.predicted_value = np.argmax(class_freqs) # idx of most probable class
-                new_node.proba = np.max(class_freqs) / float(y_subset.shape[0]) # probabilty of correct class
-            else: # regression
+                    class_freqs = np.sum(y_subset, axis=0)
+                    new_node.predicted_value = np.argmax(class_freqs) # idx of most probable class
+                    new_node.proba = np.max(class_freqs) / float(y_subset.shape[0]) # probabilty of correct class
+            else:
                 new_node.predicted_value = np.mean(y_subset)
         return new_node
             
@@ -142,6 +140,7 @@ class MyDecisionTree(BaseEstimator):
             y = one_hot_encode(self.n_classes, y)
 
         self.root = self.make_tree(X, y, 0)
+        self.is_fitted
     
     def predict(self, X):
         y_predicted = np.ndarray((X.shape[0], 1))
