@@ -330,7 +330,7 @@ class MyDecisionTree(BaseEstimator):
         
         """
 
-        y_predicted = np.ndarray((len(X), 1))
+        y_predicted = np.ndarray((len(X), 1), dtype=np.int32)
         for i, x in enumerate(X):
             y_predicted[i] = self.make_prediction(x, self.root)
         
