@@ -199,8 +199,7 @@ class MyDecisionTree(BaseEstimator):
     def calc_G(self, y, y_left, y_right):
         L = float(len(y_left))
         R = float(len(y_right))
-        N = L + R
-        return N * self.criterion(y) - L * self.criterion(y_left) - R * self.criterion(y_right)
+        return L * self.criterion(y_left) + R * self.criterion(y_right)
 
     def choose_best_split(self, X_subset, y_subset):
         """
@@ -225,7 +224,7 @@ class MyDecisionTree(BaseEstimator):
 
         """
         D = X_subset.shape[1]
-        min_loss = 0
+        min_loss = np.inf
         feature_idx = None
         optimal_thesh = None
         
@@ -233,7 +232,7 @@ class MyDecisionTree(BaseEstimator):
             for tresh in X_subset[:, j]:
                 y_left, y_right = self.make_split_only_y(j, tresh, X_subset, y_subset)
                 loss = self.calc_G(y_subset, y_left, y_right)
-                if loss > min_loss:
+                if loss < min_loss:
                     feature_idx = j
                     optimal_thesh = tresh
                     min_loss = loss
