@@ -30,7 +30,7 @@ class MyARL:
             for j in range(i + 1, len(itemsets)):
                 if len(itemsets[i].difference(itemsets[j])) == 1 and itemsets[i]:
                     combinations.append(itemsets[i].union(itemsets[j]))
-        return list(set(combinations)) # this is bad, but i didn't came up with anything better
+        return list(set(combinations))
 
     def _remove_extra_sets(self, itemset, trans) -> list:
         trans_items = frozenset(np.nonzero(trans)[0].tolist())
@@ -98,10 +98,10 @@ class MyARL:
             for i, itset in enumerate(self.common_itemsets):
                 self.common_itemsets[i] = [[labels[it] for it in itset], self.itemsets_support[itset]]
 
-    def get_rules(self, labels=None):
+    def get_rules(self):
         return self.rules
     
-    def get_popular_itemsets(self, labels=None):
+    def get_popular_itemsets(self):
         return self.common_itemsets
     
     def get_supports(self):

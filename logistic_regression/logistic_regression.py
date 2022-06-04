@@ -22,7 +22,7 @@ class MyLogisticRegression:
         n, k = X.shape
         
         if self.w is None:
-            self.w = np.random.randn(k + 1)
+            self.w = np.ones(k + 1)
         
         X_train = np.concatenate((X, np.ones((n, 1))), axis=1)
         losses = []

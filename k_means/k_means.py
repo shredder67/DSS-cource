@@ -3,6 +3,7 @@ import numpy.linalg as lng
 
 
 def get_dist(x1, x2):
+    print(lng.norm(x1 - x2))
     return lng.norm(x1 - x2)
 
 
@@ -21,9 +22,11 @@ class MyKMeans:
         cluster_means = X[np.random.permutation(X.shape[0])][:k]
         means_changed = True
         while means_changed:
+            print(cluster_means)
             means_changed = False
-            clusters = [[] for _ in range(k)]  
+            clusters = [[] for _ in range(k)]
             for x in X:
+                print(x)
                 clusters[self._closest_mean(x, cluster_means)].append(x)
 
             for i, cl in enumerate(clusters):

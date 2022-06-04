@@ -5,6 +5,7 @@ class MyLinearRegression:
     
     def __init__(self, fit_intercept=True):
         self.fit_intercept = fit_intercept
+        self.w = None
     
     def fit(self, X, y):
         n, k = X.shape
@@ -38,7 +39,7 @@ class MyLinearRegression:
 
         self.scores['MSE'] = np.square(y_true - y_pred).mean()
         self.scores['SD'] = self.scores['MSE'] ** 0.5
-        self.scores['R_2'] = 1 - np.square(y_true - y_pred).mean() / np.square(y_true - y_mean).mean()
+        self.scores['R_2'] = 1 - np.square(y_true - y_pred).sum() / np.square(y_true - y_mean).sum()
 
         return self.scores
 
