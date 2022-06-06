@@ -38,6 +38,7 @@ class MyNaiveBayesClassifier:
         for label_idx, label in enumerate(self.unique_labels):
             for feat_idx in range(X.shape[1]):
                 class_log_probs[:, label_idx] += self.label_likelyhood[label][feat_idx].logpdf(X[:, feat_idx])
+            class_log_probs[:, label_idx] += self.label_prior[label_idx]
 
         # Вычитаем логарифм вероятности x_i в целом (для этого суммируем все условные вероятности)
         for idx in range(X.shape[1]):
