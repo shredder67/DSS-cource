@@ -44,6 +44,9 @@ def main():
         (9, 'Вельзевул'),
     ]
     user_ids, titles = zip(*data)
+
+    pd.DataFrame({'item': titles}, index=user_ids).to_csv('data_example.csv')
+
     user_ids = list(set(user_ids))
     titles = list(set(titles))
 
